@@ -350,7 +350,6 @@ def DoMinMax(u):
 
 	# Traverse successor list
 	for v in Succ(u, curPlayer):
-
 		# Recursive call at MAX node
 		if(curPlayer == 1):
 			maxRes, maxVal, maxNodes = DoMinMax(v)
@@ -387,11 +386,6 @@ def InputToBoard(text):
 	# Loop through the strings and convert them to an array of chars
 	for row in range(len(board)):
 		board[row] = list(board[row].replace(' ', ''))  # Quick hack to fix space-delimiting
-
-	# Convert the strings to ints
-	for row in range(len(board)):
-		for col in range(len(board[row])):
-			board[row][col] = int(board[row][col])
 
 	return board
 

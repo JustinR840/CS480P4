@@ -11,9 +11,9 @@ def DoAlphaBeta(board):
 	hacked_board = [['-' for i in range(4)] for j in range(4)]
 	for row in range(len(board)):
 		for col in range(len(board[row])):
-			if(board[row][col] == 0):
+			if(board[row][col] == "0"):
 				hacked_board[row][col] = '-'
-			elif(board[row][col] == 1):
+			elif(board[row][col] == "1"):
 				hacked_board[row][col] = 'X'
 			else:
 				hacked_board[row][col] = 'O'
