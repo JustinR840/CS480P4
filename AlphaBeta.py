@@ -1,6 +1,31 @@
 from copy import deepcopy
 
 
+NumNodesExpanded = 0
+
+
+# Wrapper function for AlphaBeta. Will time AlphaBeta
+# and display the related output.
+def DoAlphaBeta(board):
+	# DON'T LOOK AT ME
+	hacked_board = [['-' for i in range(4)] for j in range(4)]
+	for row in range(len(board)):
+		for col in range(len(board[row])):
+			if(board[row][col] == 0):
+				hacked_board[row][col] = '-'
+			elif(board[row][col] == 1):
+				hacked_board[row][col] = 'X'
+			else:
+				hacked_board[row][col] = 'O'
+
+
+	win_states = GenerateWinStatesForGridSize(4, 4)
+	res = AlphaBeta(hacked_board, -1000, 1000, 2, win_states)
+
+	print("Board value is " + str(res))
+	print("Number of nodes expanded is " + str(NumNodesExpanded))
+	return res, NumNodesExpanded
+
 def GenerateWinStatesForGridSize(num_rows, num_cols):
 	def Backtrack(grid, starting_row, starting_col, win_states):
 		# The grid is now in a win state. Append a copy of the grid
@@ -34,17 +59,6 @@ def GenerateWinStatesForGridSize(num_rows, num_cols):
 
 	return win_states
 
-
-
-# Wrapper function for AlphaBeta. Will time AlphaBeta
-# and display the related output.
-def DoAlphaBeta():
-	board = GetInputFile()
-	win_states = GenerateWinStatesForGridSize(4, 4)
-	res = AlphaBeta(board, -1000, 1000, 16, win_states)
-	print(res)
-
-
 def max_node(board):
 	p1Count, p2Count = CountP1AndP2(board)
 	if(p1Count == p2Count):
@@ -64,6 +78,8 @@ def CountP1AndP2(board):
 
 
 def AlphaBeta(board, alpha, beta, depth, win_states):
+	global NumNodesExpanded
+	NumNodesExpanded += 1
 	if (depth == 0 or CheckBoardForWin(board, 'X') or CheckBoardForWin(board, 'O')):
 		return Eval(board, win_states)
 
@@ -169,47 +185,3 @@ def CheckBoardForWin(board, player):
 		return False
 	else:
 		return True
-
-
-# Ask for an input file. Read the contents of that file.
-def GetInputFile():
-	print("The input file should be in the same directory as main.py")
-	filename = "test.input"  # TODO: input("Enter the name of the input file: ")
-
-	with open(filename) as fp:
-		alltext = fp.read()
-		return InputToBoard(alltext)
-
-
-# Transform a string into a 2D array representing the gameboard.
-def InputToBoard(text):
-	# Initially split the board into an array of strings
-	board = text.split('\n')
-
-	# Loop through the strings and convert them to an array of chars
-	for row in range(len(board)):
-		board[row] = list(board[row])
-
-	return board
-
-
-# Get a valid input choice from the user so we know what action to perform.
-def GetProblemChoice():
-	print("Please section a problem number")
-	print("(1) MinMax Search")
-	print("(2) AlphaBeta Search")
-	print("(3) Quit Program")
-
-	selection = input("Selection: ")
-
-	# If the user doesn't pick a valid choice then repeatedly ask for a valid choice.
-	while (selection is not "1" and selection is not "2" and selection is not "3"):
-		print()
-		print("Invalid choice. Valid choices are...")
-		print("(1) MinMax Search")
-		print("(2) AlphaBeta Search")
-		print("(3) Quit Program")
-		selection = input("Selection: ")
-
-	# Convert selection to int before returning.
-	return int(selection)
