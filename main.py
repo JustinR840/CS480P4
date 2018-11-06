@@ -24,7 +24,8 @@ def main():
 			move = ConvertBoardToMove(oldBoard, newBoard)
 			print("Best move is " + str(move))
 		elif(selection == 2):
-			DoAlphaBeta()
+			board = GetInputFile()
+			DoAlphaBeta(board)
 		elif(selection == 3):
 			print("Quitting Program")
 			break
@@ -385,7 +386,12 @@ def InputToBoard(text):
 
 	# Loop through the strings and convert them to an array of chars
 	for row in range(len(board)):
-		board[row] = list(board[row])
+		board[row] = list(board[row].replace(' ', ''))  # Quick hack to fix space-delimiting
+
+	# Convert the strings to ints
+	for row in range(len(board)):
+		for col in range(len(board[row])):
+			board[row][col] = int(board[row][col])
 
 	return board
 

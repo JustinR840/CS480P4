@@ -24,6 +24,7 @@ def DoAlphaBeta(board):
 
 	print("Board value is " + str(res))
 	print("Number of nodes expanded is " + str(NumNodesExpanded))
+	print("Best move is ")
 	return res, NumNodesExpanded
 
 def GenerateWinStatesForGridSize(num_rows, num_cols):
