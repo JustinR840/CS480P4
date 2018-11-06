@@ -320,7 +320,6 @@ def DoMinMax(u):
 	numNodes = 1
 
 	# Check if the board is legal. End the function with a -1 if not legal.
-	# Also end the function if player 1 or 2 has won
 	BoardValue = CheckBoardLegality(u)
 	if(BoardValue == -1):
 		return (u, BoardValue, numNodes)
@@ -346,7 +345,7 @@ def DoMinMax(u):
 		curPlayer = 2
 
 	# Resulting board
-	res = None
+	res = u
 
 	# Traverse successor list
 	for v in Succ(u, curPlayer):
