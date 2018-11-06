@@ -41,41 +41,81 @@ def GenerateWinStatesForGridSize(num_rows, num_cols):
 def DoAlphaBeta():
 	board = GetInputFile()
 	win_states = GenerateWinStatesForGridSize(4, 4)
-	print(Eval2(board, win_states))
+	res = AlphaBeta(board, -1000, 1000, 16, win_states)
+	print(res)
 
 
-# AlphaBeta()
+def max_node(board):
+	p1Count, p2Count = CountP1AndP2(board)
+	if(p1Count == p2Count):
+		return True
+	return False
+
+def CountP1AndP2(board):
+	p1Count = 0
+	p2Count = 0
+	for i in range(len(board)):
+		for j in board[i]:
+			if(j == "X"):
+				p1Count += 1
+			elif(j == "O"):
+				p2Count += 1
+	return (p1Count, p2Count)
 
 
-def max_node():
-	pass
+def AlphaBeta(board, alpha, beta, depth, win_states):
+	if (depth == 0 or CheckBoardForWin(board, 'X') or CheckBoardForWin(board, 'O')):
+		return Eval(board, win_states)
 
+	nextturn = GetNextTurn(board)
 
-def AlphaBeta(board, u, alpha, beta, depth):
-	if (depth == 0):  # leaf(u)):
-		return Eval(board)
-	if (max_node(u)):
+	if (max_node(board)):
 		res = alpha
-		for v in Successors(u):
-			val = AlphaBeta(board, v, res, beta, depth - 1)
+		for v in Successors(board, nextturn):
+			val = AlphaBeta(v, res, beta, depth - 1, win_states)
 			res = max(res, val)
 			if (res >= beta):
 				return res
 	else:
 		res = beta
-		for v in Successors(u):
-			val = AlphaBeta(board, v, alpha, res, depth - 1)
+		for v in Successors(board,nextturn):
+			val = AlphaBeta(v, alpha, res, depth - 1, win_states)
 			res = min(res, val)
 			if (res <= alpha):
 				return res
 
-	# TODO: What is this for..?
 	return res
 
 
-def Successors(u):
-	for i in range(1):
-		yield i
+def GetNextTurn(board):
+	NumP1 = 0
+	NumP2 = 0
+	for row in board:
+		for col in row:
+			if(col == 'X'):
+				NumP1 += 1
+			elif(col == 'O'):
+				NumP2 += 1
+	if(NumP1 == NumP2):
+		return 'O'
+	else:
+		return 'X'
+
+
+def Successors(board, player):
+	# Check the current board for empty spaces. For each empty space,
+	# create a new board with the player placing a symbol in the empty
+	# space and append it to the successor list.
+	for i in range(len(board)):
+		for j in range(len(board[i])):
+			if (board[i][j] == "-"):
+
+				succ = deepcopy(board)
+				if (player == 'X'):
+					succ[i][j] = 'X'
+				else:
+					succ[i][j] = 'O'
+				yield succ
 
 
 # Static evaluation function from the perspective
@@ -89,63 +129,30 @@ def Eval(board, win_states):
 	elif (CheckBoardForWin(board, 'O')):
 		return -100
 
-	# TODO: Ways P1 can win - Ways P2 can win
-	score = 0
+
+	finalscore = 0
 
 	for win_state in range(len(win_states)):
-		player_one_score = 0
-		player_two_score = 0
+		p1tmp = 0
+		p2tmp = 0
 
 		for row in range(len(win_states[win_state])):
 			for col in range(len(win_states[win_state][row])):
 				if (win_states[win_state][row][col] == 'X'):
-					if (board[row][col] == 'X' or board[row][col] == '-'):
-						player_one_score += 1
-					elif (board[row][col] == 'O' or board[row][col] == '-'):
-						player_two_score += 1
+					if (board[row][col] == 'X'):
+						p1tmp += 1
+					elif (board[row][col] == 'O'):
+						p2tmp += 1
+					else:
+						p1tmp += 1
+						p2tmp += 1
 
-		if(player_one_score == 4):
-			score += 1
-		if(player_two_score == 4):
-			score -= 1
+		if(p1tmp == 4):
+			finalscore += 1
+		elif(p2tmp == 4):
+			finalscore -= 1
 
-	return score
-
-
-def Eval2(board, winList):
-	if (CheckBoardForWin(board, 'X')):
-		return 100
-	if (CheckBoardForWin(board, 'O')):
-		return -100
-	# For each player:
-	# Traverse the win list. If there is a "P" in the win board position
-	# and either a '0' or player symbol ('1' for player 1, '2' for player 2)
-	# in the current board position, mark that row and column for that
-	# player as filled. At the end of each board comparison, if there are
-	# 4 matches, then that is a possible win state for the player
-	player1Eval = 0
-	for winBoard in winList:
-		numMatches = 0
-		# Traverse both boards at the same time
-		for i in range(len(board)):
-			for j in range(len(board[i])):
-				if (winBoard[i][j] == "P"):
-					if (board[i][j] == 'X' or board[i][j] == '-'):
-						numMatches += 1
-		if (numMatches == 4):
-			player1Eval += 1
-	player2Eval = 0
-	for winBoard in winList:
-		numMatches = 0
-		# Traverse both boards at the same time
-		for i in range(len(board)):
-			for j in range(len(board[i])):
-				if (winBoard[i][j] == "P"):
-					if (board[i][j] == 'O' or board[i][j] == '-'):
-						numMatches += 1
-		if (numMatches == 4):
-			player2Eval += 1
-	return player1Eval - player2Eval
+	return finalscore
 
 
 def CheckBoardForWin(board, player):
