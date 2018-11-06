@@ -6,8 +6,12 @@ def main():
 		selection = GetProblemChoice()
 
 		if(selection == 1):
-			board, value, numNodes = DoMinMax(GetInputFile())
+			oldBoard = GetInputFile()
+			newBoard, value, numNodes = DoMinMax(oldBoard)
 			if(numNodes > 1):
+				# Output 1 if win for 1st player
+				# Output 0.5 if draw
+				# Output 0 if win for 2nd player
 				if(value > 0):
 					print("Board value is 1")
 				elif(value < 0):
@@ -17,8 +21,8 @@ def main():
 			elif(numNodes == 1):
 				print("Board value is " + str(value))
 			print("Number of nodes expanded is " + str(numNodes))
-			for r in board:
-				print(r)
+			move = ConvertBoardToMove(oldBoard, newBoard)
+			print("Best move is " + str(move))
 		elif(selection == 2):
 			DoAlphaBeta()
 		elif(selection == 3):
@@ -60,6 +64,12 @@ def calcWinPos():
 					
 
 	return winList
+
+def ConvertBoardToMove(oldBoard, newBoard):
+	for r in range(4):
+		for c in range(4):
+			if(oldBoard[r][c] != newBoard[r][c]):
+				return (r,c)
 
 # Count the number of player 1 symbols and player 2 symbols
 def CountP1AndP2(board):
@@ -224,10 +234,8 @@ def Leaf(board):
 # The static evaluation is as follows:
 # 100 if a win for player one,
 # -100 if a win for player two
-# Else,
-# The static eval is:
+# Else, the static eval is:
 # Number of ways player 1 can win - number of ways player 2 can win
-# To count the number of ways a player can win:
 def Eval(board):
 	if(CheckPlayerVictory(board, 1)):
 		return 100
@@ -277,7 +285,7 @@ def Eval(board):
 # Returns true if the node is a max node, false otherwise
 # Basically, true if it is player 1's turn, false if player 2's
 # Since player 1 (1) goes first, if there are an equal number of
-# X's and O's, it is player 1's turn
+# 1's and 2's, it is player 1's turn
 # Else, it is player 2's turn
 def MaxNode(board):
 	p1Count, p2Count = CountP1AndP2(board)
@@ -319,10 +327,7 @@ def DoMinMax(u):
 	if(BoardValue != 2):
 		return (u, BoardValue, numNodes)
 
-	#TODO: Output board value
-	# Output 1 if win for 1st player
-	# Output 0.5 if draw
-	# Output 0 if win for 2nd player
+
 
 	# Return the static evaluation if the current board is a leaf node
 	if(Leaf(u)):
@@ -372,7 +377,7 @@ def DoMinMax(u):
 # Ask for an input file. Read the contents of that file.
 def GetInputFile():
 	#print("The input file should be in the same directory as main.py")
-	filename = "test.input" #TODO: input("Enter the name of the input file: ")
+	filename = input("Enter the name of the input file: ")
 
 	with open(filename) as fp:
 		alltext = fp.read()
