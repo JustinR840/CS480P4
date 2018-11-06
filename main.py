@@ -1,3 +1,5 @@
+from AlphaBeta import DoAlphaBeta
+
 def main():
 	# Main loop. Keep running until we break out when selection == 3 (Quit Program)
 	while(True):
@@ -366,31 +368,6 @@ def DoMinMax(u):
 
 	# Return final evaluation
 	return (res, val, numNodes)
-
-def DoAlphaBeta(u, alpha, beta):
-	"""board = GetProblemChoice()
-	print(board)
-
-	# TODO: Need some way to determine our leaf nodes. A max depth?
-	if(leaf(u)):
-		return Eval(p)
-	if(max_node(u)):
-		res = alpha
-		for each v in succ(u):
-			val = DoAlphaBeta(v, res, beta)
-			res = max_of(res, val)
-			if(res >= beta):
-				return res
-	else:
-		res = beta
-		for each v in succ(u):
-			val = DoAlphaBeta(v, alpha, res)
-			res = min_of(res, val)
-			if(res <= alpha):
-				return res
-
-	# What is this for..?
-	return res"""
 
 # Ask for an input file. Read the contents of that file.
 def GetInputFile():
