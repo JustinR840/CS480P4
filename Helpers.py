@@ -8,7 +8,7 @@ def GenerateWinStatesForGridSize(num_rows, num_cols):
 	def Backtrack(grid, starting_row, starting_col, win_states):
 		# The grid is now in a win state. Append a copy of the grid
 		# to the win_states list.
-		if (CheckBoardForWin(grid, 1)):
+		if (IsWin(grid, 1)):
 			win_states.append(deepcopy(grid))
 
 		# Out of bounds
@@ -39,27 +39,50 @@ def GenerateWinStatesForGridSize(num_rows, num_cols):
 	all_win_states = win_states
 
 
+def WhatWasTheMove(old_board, new_board):
+	for i in range(len(old_board)):
+		for j in range(len(old_board[i])):
+			if(old_board[i][j] != new_board[i][j]):
+				return i, j
+
+	raise Exception("boards were the same")
+
+
+# Generator function to get successor boards for a single board passed to it
+def Successors(board, player):
+	# Check the current board for empty spaces. For each empty space,
+	# create a new board with the player placing a symbol in the empty
+	# space and append it to the successor list.
+	for i in range(len(board)):
+		for j in range(len(board[i])):
+			if (board[i][j] == 0):
+
+				succ = deepcopy(board)
+				succ[i][j] = player
+				yield succ
+
+
 # Static evaluation function from the perspective
 # of Player 1.
 # Should return 100 if a move here is a win for P1
 # Should return -100 if a move here is a loss for P1
 # Otherwise, return # of ways P1 can win - # of ways P2 can win
-def Eval(board, win_states):
-	if (CheckBoardForWin(board, 1)):
+def Eval(board):
+	if (IsWin(board, 1)):
 		return 100
-	elif (CheckBoardForWin(board, 2)):
+	elif (IsWin(board, 2)):
 		return -100
 
 
 	finalscore = 0
 
-	for win_state in range(len(win_states)):
+	for win_state in range(len(all_win_states)):
 		p1tmp = 0
 		p2tmp = 0
 
-		for row in range(len(win_states[win_state])):
-			for col in range(len(win_states[win_state][row])):
-				if (win_states[win_state][row][col] == 1):
+		for row in range(len(all_win_states[win_state])):
+			for col in range(len(all_win_states[win_state][row])):
+				if (all_win_states[win_state][row][col] == 1):
 					if (board[row][col] == 1):
 						p1tmp += 1
 					elif (board[row][col] == 2):
@@ -76,20 +99,61 @@ def Eval(board, win_states):
 	return finalscore
 
 
-def CheckBoardForWin(board, player):
+def IsLeaf(board):
+	# Check if either player has won the game
+	if(IsWin(board, 1) or IsWin(board, 2)):
+		return True
+
+	# If there are no more available spaces the game is over
+	for i in board:
+		for j in i:
+			if j == 0:
+				return False
+
+	return True
+
+
+def IsWin(board, player):
 	row_status = [0, 0, 0, 0]
 	col_status = [0, 0, 0, 0]
 
 	for row in range(len(board)):
 		for col in range(len(board[row])):
+			# A single spot taken by a player counts for
+			# the row and column.
 			if (board[row][col] == player):
 				row_status[row] = 1
 				col_status[col] = 1
 
+	# If there are any 0s left then there is a row/column
+	# that has yet to be filled.
 	if (0 in row_status or 0 in col_status):
 		return False
 	else:
 		return True
+
+
+def WhoseTurnIsIt(board):
+	num_P1 = 0
+	num_P2 = 0
+
+	for i in board:
+		for j in i:
+			if j == 1:
+				num_P1 += 1
+			elif(j == 2):
+				num_P2 += 1
+
+	if(num_P1 == num_P2):
+		return 1
+	elif(num_P1 - 1 == num_P2):
+		return 2
+
+	raise Exception("INVALID BOARD")
+
+
+
+
 
 
 # Check the legality of the board
@@ -209,7 +273,7 @@ def InputToBoard(text):
 
 	# Loop through the strings and convert them to an array of chars
 	for row in range(len(board)):
-		board[row] = list(map(int, board[row].replace(' ', ''))) # Quick hack to fix space-delimiting
+		board[row] = list(map(int, board[row].replace(' ', '').replace('X', '1').replace('O', '2').replace('-', '0'))) # Quick hack to fix space-delimiting
 
 	return board
 

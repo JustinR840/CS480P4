@@ -1,86 +1,66 @@
-NumNodesExpanded = 0
+from Helpers import IsLeaf, Eval, Successors, WhatWasTheMove, WhoseTurnIsIt
+
+num_nodes_expanded = 0
 
 
-# Wrapper function for AlphaBeta. Will time AlphaBeta
-# and display the related output.
-def DoAlphaBeta(board):
-	win_states = GenerateWinStatesForGridSize(4, 4)
-	res = AlphaBeta(board, -1000, 1000, 2, win_states)
+def DoAlphaBeta(current_board):
+	whose_turn_is_it = WhoseTurnIsIt(current_board)
+	print("Turn: Player", whose_turn_is_it)
 
-	print("Board value is " + str(res))
-	print("Number of nodes expanded is " + str(NumNodesExpanded))
-	print("Best move is ")
-	return res, NumNodesExpanded
+	better_board, val = AlphaBeta(current_board, -999, 999, whose_turn_is_it, whose_turn_is_it, 14)
+	move = WhatWasTheMove(current_board, better_board)
 
+	for i in current_board:
+		print(i)
 
-def max_node(board):
-	p1Count, p2Count = CountP1AndP2(board)
-	if(p1Count == p2Count):
-		return True
-	return False
+	if(whose_turn_is_it == 1):
+		other_player = 2
+	else:
+		other_player = 1
 
-def CountP1AndP2(board):
-	p1Count = 0
-	p2Count = 0
-	for i in range(len(board)):
-		for j in board[i]:
-			if(j == 1):
-				p1Count += 1
-			elif(j == 2):
-				p2Count += 1
-	return (p1Count, p2Count)
+	if(val == 100):
+		print("Root Node Value:", val, "(Player", whose_turn_is_it, "Wins)")
+	elif(val == -100):
+		print("Root Node Value:", val, "(Player", other_player, "Wins)")
+	# else:
+	# 	print(0.5, "draw")
+
+	print("Best Next Move:", move)
+	print("Number of Nodes Expanded:", num_nodes_expanded)
 
 
-def AlphaBeta(board, alpha, beta, depth, win_states):
-	global NumNodesExpanded
-	NumNodesExpanded += 1
-	if (depth == 0 or CheckBoardForWin(board, 1) or CheckBoardForWin(board, 2)):
-		return Eval(board, win_states)
+def AlphaBeta(current_board, alpha, beta, current_player, original_player, depth):
+	global num_nodes_expanded
+	num_nodes_expanded += 1
 
-	nextturn = GetNextTurn(board)
+	better_board = list(current_board)
+	if(IsLeaf(current_board) or depth == 1):
+		return better_board, Eval(current_board)
 
-	if (max_node(board)):
+	if(current_player == 1):
+		nextPlayer = 2
+	else:
+		nextPlayer = 1
+
+	if(current_player == original_player):
 		res = alpha
-		for v in Successors(board, nextturn):
-			val = AlphaBeta(v, res, beta, depth - 1, win_states)
-			res = max(res, val)
-			if (res >= beta):
-				return res
+		for new_board in Successors(current_board, current_player):
+			x, val = AlphaBeta(new_board, res, beta, nextPlayer, original_player, depth - 1)
+			if(val > res):
+				res = val
+				better_board = list(x)
+			#res = max(res, val)
+			if(res >= beta):
+				return better_board, res
 	else:
 		res = beta
-		for v in Successors(board,nextturn):
-			val = AlphaBeta(v, alpha, res, depth - 1, win_states)
-			res = min(res, val)
-			if (res <= alpha):
-				return res
+		for new_board in Successors(current_board, current_player):
+			x, val = AlphaBeta(new_board, alpha, res, nextPlayer, original_player, depth - 1)
+			if(val < res):
+				res = val
+				better_board = list(x)
+			#res = min(res, val)
+			if(res <= alpha):
+				return better_board, res
 
-	return res
-
-
-def GetNextTurn(board):
-	NumP1 = 0
-	NumP2 = 0
-	for row in board:
-		for col in row:
-			if(col == 1):
-				NumP1 += 1
-			elif(col == 2):
-				NumP2 += 1
-	if(NumP1 == NumP2):
-		return 2
-	else:
-		return 1
-
-
-# Generator function to get successor boards for a single board passed to it
-def Successors(board, player):
-	# Check the current board for empty spaces. For each empty space,
-	# create a new board with the player placing a symbol in the empty
-	# space and append it to the successor list.
-	for i in range(len(board)):
-		for j in range(len(board[i])):
-			if (board[i][j] == 0):
-
-				succ = deepcopy(board)
-				succ[i][j] = player
-				yield succ
+	return better_board, res
