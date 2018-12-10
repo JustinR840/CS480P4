@@ -7,7 +7,7 @@ def DoAlphaBeta(current_board):
 	whose_turn_is_it = WhoseTurnIsIt(current_board)
 	print("Turn: Player", whose_turn_is_it)
 
-	better_board, val = AlphaBeta(current_board, -999, 999, whose_turn_is_it, whose_turn_is_it, 14)
+	better_board, val = AlphaBeta(current_board, -999, 999, whose_turn_is_it, whose_turn_is_it, 6 * 2)
 	move = WhatWasTheMove(current_board, better_board)
 
 	for i in current_board:
@@ -22,8 +22,6 @@ def DoAlphaBeta(current_board):
 		print("Root Node Value:", val, "(Player", whose_turn_is_it, "Wins)")
 	elif(val == -100):
 		print("Root Node Value:", val, "(Player", other_player, "Wins)")
-	# else:
-	# 	print(0.5, "draw")
 
 	print("Best Next Move:", move)
 	print("Number of Nodes Expanded:", num_nodes_expanded)

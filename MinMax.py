@@ -1,4 +1,4 @@
-from Helpers import WhatWasTheMove, IsLeaf, Eval, Successors, WhoseTurnIsIt
+from Helpers import WhatWasTheMove, IsLeaf, Eval, Successors, WhoseTurnIsIt, IsMaxNode
 
 num_nodes_expanded = 0
 
@@ -23,7 +23,7 @@ def DoMinMax(current_board):
 	elif(val == -100):
 		print("Root Node Value:", val, "(Player", other_player, "Wins)")
 	else:
-		print("Root Node Value: 0.5 (Draw)")
+		print("Root Node Value: 0.5 (Draw) (Actual:", val, ")")
 
 	print("Best Next Move:", move)
 	print("Number of Nodes Expanded:", num_nodes_expanded)
@@ -33,28 +33,29 @@ def MinMax(current_board, current_player, original_player):
 	global num_nodes_expanded
 	num_nodes_expanded += 1
 
-	better_board = list(current_board)
+	better_board = current_board
 	if(IsLeaf(current_board)):
-		return better_board, Eval(current_board)
+		return better_board, Eval(current_board, original_player)
 
 	if(current_player == 1):
-		nextPlayer = 2
+		next_player = 2
 	else:
-		nextPlayer = 1
+		next_player = 1
 
-	if(current_player == original_player):
-		val = -100
+	if(IsMaxNode(current_board, original_player)):
+		val = -999
 	else:
-		val = 100
+		val = 999
 
 	for new_board in Successors(current_board, current_player):
-		_, y = MinMax(new_board, nextPlayer, original_player)
-		if(current_player == original_player):
+		x, y = MinMax(new_board, next_player, original_player)
+
+		if(IsMaxNode(current_board, original_player)):
 			if(y > val):
 				val = y
-				better_board = list(new_board)
+				better_board = x
 		else:
 			if(y < val):
 				val = y
-				better_board = list(new_board)
+				better_board = x
 	return better_board, val

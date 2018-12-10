@@ -1,14 +1,14 @@
 from AlphaBeta import DoAlphaBeta
 from MinMax import DoMinMax
-from Helpers import GetProblemChoice, GetInputFile, GenerateWinStatesForGridSize, WhoseTurnIsIt
+from Helpers import GetProblemChoice, GetInputFile, GenerateWinStatesForGridSize
 
 def main():
 	GenerateWinStatesForGridSize(4, 4)
 	board = GetInputFile()
-	#DoMinMax(board)
+	DoMinMax(board)
 	print()
 	print()
-	DoAlphaBeta(board)
+	#DoAlphaBeta(board)
 
 
 	return

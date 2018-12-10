@@ -39,6 +39,14 @@ def GenerateWinStatesForGridSize(num_rows, num_cols):
 	all_win_states = win_states
 
 
+def IsMaxNode(board, original_player):
+	whose_turn_is_it = WhoseTurnIsIt(board)
+
+	if(whose_turn_is_it == original_player):
+		return True
+	return False
+
+
 def WhatWasTheMove(old_board, new_board):
 	for i in range(len(old_board)):
 		for j in range(len(old_board[i])):
@@ -63,14 +71,19 @@ def Successors(board, player):
 
 
 # Static evaluation function from the perspective
-# of Player 1.
+# of the original player.
 # Should return 100 if a move here is a win for P1
 # Should return -100 if a move here is a loss for P1
 # Otherwise, return # of ways P1 can win - # of ways P2 can win
-def Eval(board):
-	if (IsWin(board, 1)):
+def Eval(board, original_player):
+	if(original_player == 1):
+		other_player = 2
+	else:
+		other_player = 1
+
+	if (IsWin(board, original_player)):
 		return 100
-	elif (IsWin(board, 2)):
+	elif (IsWin(board, other_player)):
 		return -100
 
 
@@ -83,9 +96,9 @@ def Eval(board):
 		for row in range(len(all_win_states[win_state])):
 			for col in range(len(all_win_states[win_state][row])):
 				if (all_win_states[win_state][row][col] == 1):
-					if (board[row][col] == 1):
+					if (board[row][col] == original_player):
 						p1tmp += 1
-					elif (board[row][col] == 2):
+					elif (board[row][col] == other_player):
 						p2tmp += 1
 					else:
 						p1tmp += 1
