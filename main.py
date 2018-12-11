@@ -3,6 +3,7 @@ from MinMax import DoMinMax
 from Helpers import GetProblemChoice, GetInputFile, GenerateWinStatesForGridSize, CheckBoardLegality
 
 def main():
+	# Setup the win states
 	GenerateWinStatesForGridSize(4, 4)
 
 	# Main loop. Keep running until we break out when selection == 3 (Quit Program)
@@ -14,7 +15,9 @@ def main():
 			break
 
 		board = GetInputFile()
-		CheckBoardLegality(board)
+		while(CheckBoardLegality(board) == -1):
+			print("Error: Input board is not in a legal configuration.")
+			board = GetInputFile()
 		if(selection == 1):
 			DoMinMax(board)
 		elif(selection == 2):

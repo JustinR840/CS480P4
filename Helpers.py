@@ -4,6 +4,7 @@ from copy import deepcopy
 all_win_states = []
 
 
+# Generates all possible win boards using a backtracking algorithm.
 def GenerateWinStatesForGridSize(num_rows, num_cols):
 	def Backtrack(grid, starting_row, starting_col, win_states):
 		# The grid is now in a win state. Append a copy of the grid
@@ -39,6 +40,8 @@ def GenerateWinStatesForGridSize(num_rows, num_cols):
 	all_win_states = win_states
 
 
+# A node is a max node if the the person whose turn it is
+# is the same as the original player at the root node.
 def IsMaxNode(board, original_player):
 	whose_turn_is_it = WhoseTurnIsIt(board)
 
@@ -47,6 +50,7 @@ def IsMaxNode(board, original_player):
 	return False
 
 
+# Given two boards, find out what move was made.
 def WhatWasTheMove(old_board, new_board):
 	for i in range(len(old_board)):
 		for j in range(len(old_board[i])):
@@ -112,6 +116,8 @@ def Eval(board, original_player):
 	return finalscore
 
 
+# A board is a leaf if it is a win for either player or there
+# are no spaces left to move.
 def IsLeaf(board):
 	# Check if either player has won the game
 	if(IsWin(board, 1) or IsWin(board, 2)):
@@ -146,6 +152,10 @@ def IsWin(board, player):
 		return True
 
 
+# Determines whose turn it is by counting the number of
+# tiles each player owns. If the number owned is the same,
+# it is player 1's turn. If player 1 has 1 more tile than
+# player 2, it is player 2's turn.
 def WhoseTurnIsIt(board):
 	num_P1 = 0
 	num_P2 = 0
@@ -162,12 +172,6 @@ def WhoseTurnIsIt(board):
 	elif(num_P1 - 1 == num_P2):
 		return 2
 
-	raise Exception("INVALID BOARD")
-
-
-
-
-
 
 def CountP1AndP2(board):
 	p1_count = 0
@@ -181,7 +185,6 @@ def CountP1AndP2(board):
 				p2_count += 1
 
 	return p1_count, p2_count
-
 
 
 # Check the legality of the board
@@ -273,18 +276,6 @@ def CheckBoardLegality(board):
 	return 2
 
 
-
-
-
-
-
-def ConvertBoardToMove(oldBoard, newBoard):
-	for r in range(4):
-		for c in range(4):
-			if (oldBoard[r][c] != newBoard[r][c]):
-				return (r, c)
-
-
 # Ask for an input file. Read the contents of that file.
 def GetInputFile():
 	#print("The input file should be in the same directory as main.py")
@@ -301,7 +292,7 @@ def InputToBoard(text):
 
 	# Loop through the strings and convert them to an array of chars
 	for row in range(len(board)):
-		board[row] = list(map(int, board[row].replace(' ', '').replace('X', '1').replace('O', '2').replace('-', '0'))) # Quick hack to fix space-delimiting
+		board[row] = list(map(int, board[row].replace(' ', '').replace('X', '1').replace('O', '2').replace('-', '0'))) # Convert board from strings to ints
 
 	return board
 
