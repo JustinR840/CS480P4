@@ -33,7 +33,7 @@ def AlphaBeta(current_board, alpha, beta, current_player, original_player, depth
 
 	better_board = list(current_board)
 	if(IsLeaf(current_board) or depth == 1):
-		return better_board, Eval(current_board)
+		return better_board, Eval(current_board, original_player)
 
 	if(current_player == 1):
 		nextPlayer = 2

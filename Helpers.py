@@ -169,6 +169,21 @@ def WhoseTurnIsIt(board):
 
 
 
+def CountP1AndP2(board):
+	p1_count = 0
+	p2_count = 0
+
+	for i in board:
+		for j in i:
+			if(j == 1):
+				p1_count += 1
+			elif(j == 2):
+				p2_count += 1
+
+	return p1_count, p2_count
+
+
+
 # Check the legality of the board
 # A board is illegal if:
 # One player has two or more positions captured than the other player
@@ -273,7 +288,7 @@ def ConvertBoardToMove(oldBoard, newBoard):
 # Ask for an input file. Read the contents of that file.
 def GetInputFile():
 	#print("The input file should be in the same directory as main.py")
-	filename = "test.input" # input("Enter the name of the input file: ")
+	filename = input("Enter the name of the input file: ")
 
 	with open(filename) as fp:
 		alltext = fp.read()
